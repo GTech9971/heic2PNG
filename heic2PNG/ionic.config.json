@@ -1,0 +1,7 @@
+{
+  "name": "heic2PNG",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
