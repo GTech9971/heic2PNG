@@ -1,0 +1,10 @@
+.btn-center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.progress-center{
+    display: flex;
+    align-items: center;
+}

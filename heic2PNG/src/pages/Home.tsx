@@ -1,9 +1,9 @@
-import { IonContent, IonGrid, IonHeader, IonItem, IonLabel, IonList, IonPage, IonProgressBar, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { IonBadge, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonLabel, IonList, IonListHeader, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import { useState } from 'react';
 import ExploreContainer from '../components/ExploreContainer';
 import FileInput, { FileInputProps } from '../components/FileInput/FileInput';
 import './Home.css';
-
+import FileCard, { ConvertStatus } from '../components/FileCard/FileCard';
 
 
 const Home: React.FC = () => {
@@ -25,26 +25,45 @@ const Home: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Blank</IonTitle>
+          <IonTitle>heic2PNG</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
 
-        <IonGrid class='center'>
-          <IonRow>
+        <IonGrid>
+          <IonRow className='row-center'>
+            <h1>HEIC convert to PNG</h1>
+          </IonRow>
+          <IonRow className='row-center'>
             <FileInput text={props.text} handler={props.handler} />
+          </IonRow>
+
+          <IonRow>
+            <IonCol>
+              <IonButton color={'danger'}>Convert</IonButton>
+            </IonCol>
           </IonRow>
         </IonGrid>
 
-        <IonGrid class='center'>
+        <IonGrid>
           <IonRow style={{ width: '100%' }}>
             <IonList style={{ width: '100%' }}>
+
+              <IonListHeader lines='inset'>
+                <IonLabel>
+                  Convert HEIC image list
+                  <IonBadge color={'danger'}>{imgs.length}</IonBadge>
+                </IonLabel>
+              </IonListHeader>
+
               {imgs.map((img, index) => {
                 return (
-                  <IonItem key={index}>
-                    <IonLabel slot='start'>{img.name}</IonLabel>
-                    <IonProgressBar value={0.24}></IonProgressBar>
-                  </IonItem>
+                  <FileCard key={index}
+                    fileName={img.name}
+                    fileSize={img.size}
+                    status={ConvertStatus.NONE}
+                    proccess={0.0}
+                  ></FileCard>
                 )
               })}
             </IonList>
