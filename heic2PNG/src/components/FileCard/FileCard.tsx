@@ -10,38 +10,19 @@ import {
     IonProgressBar,
     IonRow
 } from "@ionic/react";
+import { ConvertData } from "../../model/ConvertData";
+import { ConvertStatus } from "../../model/ConvertStatus";
 import './FileCard.css';
 
-/**
- * 変換ステータス
- */
-export enum ConvertStatus {
-    NONE,
-    PROCESSING,
-    DONE,
-    ERROR,
-}
+const FileCard = (props: ConvertData) => {
 
-export interface FileCardProps {
-    /** ファイル名 */
-    fileName: string;
-    /** ファイルサイズ */
-    fileSize: number;
-    /** 変換ステータス */
-    status: ConvertStatus;
-    /** 変換率 */
-    proccess: number;
-}
-
-const FileCard = (props: FileCardProps) => {
-
-    const { fileName, fileSize, status, proccess } = props;
+    const { file, status, proccess } = props;
 
     return (
         <IonCard>
             <IonCardHeader>
-                <IonCardTitle>{fileName}</IonCardTitle>
-                <IonCardSubtitle>{fileSize}byte</IonCardSubtitle>
+                <IonCardTitle>{file.name}</IonCardTitle>
+                <IonCardSubtitle>{file.size}byte</IonCardSubtitle>
             </IonCardHeader>
 
             <IonCardContent>

@@ -1,25 +1,95 @@
-import { IonBadge, IonButton, IonCol, IonContent, IonGrid, IonHeader, IonLabel, IonList, IonListHeader, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import { useState } from 'react';
-import ExploreContainer from '../components/ExploreContainer';
+import {
+  IonBadge,
+  IonButton,
+  IonCol,
+  IonContent,
+  IonGrid,
+  IonHeader,
+  IonLabel,
+  IonList,
+  IonListHeader,
+  IonPage,
+  IonRow,
+  IonTitle,
+  IonToolbar,
+  useIonAlert
+} from '@ionic/react';
+import React, { useState } from 'react';
 import FileInput, { FileInputProps } from '../components/FileInput/FileInput';
 import './Home.css';
-import FileCard, { ConvertStatus } from '../components/FileCard/FileCard';
-
+import FileCard from '../components/FileCard/FileCard';
+import { useHeicConvert } from '../services/heicConvert.service';
+import { ConvertData } from '../model/ConvertData';
+import { ConvertStatus } from '../model/ConvertStatus';
 
 const Home: React.FC = () => {
-
+  const [presentAlert] = useIonAlert();
   const [imgs, setImgs] = useState<File[]>([]);
+  const [convertList, setConvertList] = useState<ConvertData[]>([]);
+
+  const updateConvertData = (data: ConvertData) => {
+    setConvertList(prevState => {
+      prevState.forEach(d => {
+        if (d.file.name === data.file.name) {
+          d = data;
+        }
+      });
+
+      const newList: ConvertData[] = [];
+      prevState.forEach(d => { newList.push(d) });
+
+      return newList;
+    });
+  };
+
+  const { convertHeic2Png } = useHeicConvert();
 
   const props: FileInputProps = {
     text: 'HEICファイルをドラッグ',
+    /** ファイル入力時のイベントハンドラ */
     handler: (files: FileList) => {
       const newList: File[] = [];
       for (let i = 0; i < files.length; i++) {
         newList.push(files.item(i) as File);
       }
       setImgs(newList);
+
+      //ファイル変換モデルに変換
+      const newConvertList: ConvertData[] = [];
+      newList.forEach(f => {
+        newConvertList.push({
+          file: f,
+          proccess: 0.0,
+          status: ConvertStatus.NONE
+        });
+      });
+
+      setConvertList(newConvertList);
     }
   }
+
+  const onClickConvertBtn = async () => {
+    // からの場合
+    if (convertList.length === 0) {
+      await presentAlert({ header: 'エラー', message: 'データがありません' });
+      return;
+    }
+
+    for (let data of convertList) {
+      data.status = ConvertStatus.PROCESSING;
+      updateConvertData(data);
+      try {
+        const pngData: Blob = await convertHeic2Png(data);
+      } catch (e) {
+        throw e;
+      }
+
+      data.status = ConvertStatus.DONE;
+      updateConvertData(data);
+    }
+  };
+
+
 
   return (
     <IonPage>
@@ -40,7 +110,8 @@ const Home: React.FC = () => {
 
           <IonRow>
             <IonCol>
-              <IonButton color={'danger'}>Convert</IonButton>
+              {/* 変換ボタン */}
+              <IonButton color={'danger'} onClick={onClickConvertBtn}>Convert</IonButton>
             </IonCol>
           </IonRow>
         </IonGrid>
@@ -56,13 +127,12 @@ const Home: React.FC = () => {
                 </IonLabel>
               </IonListHeader>
 
-              {imgs.map((img, index) => {
+              {convertList.map((data, index) => {
                 return (
                   <FileCard key={index}
-                    fileName={img.name}
-                    fileSize={img.size}
-                    status={ConvertStatus.NONE}
-                    proccess={0.0}
+                    file={data.file}
+                    proccess={data.proccess}
+                    status={data.status}
                   ></FileCard>
                 )
               })}
