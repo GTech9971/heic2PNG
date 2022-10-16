@@ -10,4 +10,7 @@ export interface ConvertData {
     status: ConvertStatus;
     /** 変換率 */
     proccess: number;
+
+    /** 変換済みデータ */
+    convertedBlob: Blob | null;
 }

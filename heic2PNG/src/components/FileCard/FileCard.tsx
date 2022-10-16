@@ -1,5 +1,4 @@
 import {
-    IonButton,
     IonCard,
     IonCardContent,
     IonCardHeader,
@@ -10,30 +9,65 @@ import {
     IonProgressBar,
     IonRow
 } from "@ionic/react";
+import { useState } from "react";
 import { ConvertData } from "../../model/ConvertData";
 import { ConvertStatus } from "../../model/ConvertStatus";
+import { HeicConvert } from "../../services/heicConvert.service";
+import { ConvertButton } from "../ConvertButton/ConvertButton";
 import './FileCard.css';
 
-const FileCard = (props: ConvertData) => {
+export interface FileCardProps {
+    heic: File;
+}
 
-    const { file, status, proccess } = props;
+export const FileCard = (props: FileCardProps) => {
+    const { heic } = props;
+    const [data, setData] = useState<ConvertData>({ file: heic, status: ConvertStatus.NONE, proccess: 0.0, convertedBlob: null });
+    const { convertHeic2Png } = HeicConvert();
+
+    const progressType: "indeterminate" | undefined = data?.status === ConvertStatus.PROCESSING ? "indeterminate" : undefined;
+
+    //変換処理
+    const onClickConvertBtn = async () => {
+        //一部分だけ更新
+        setData((prevState) => ({ ...prevState, status: ConvertStatus.PROCESSING }));
+        try {
+            const dest: Blob = await convertHeic2Png(data);
+            setData((prevState) => ({ ...prevState, convertedBlob: dest }));
+        } catch (e) {
+            throw e;
+        }
+
+        setData((prevState) => ({ ...prevState, status: ConvertStatus.DONE }));
+        setData((prevState) => ({ ...prevState, proccess: 1.0 }));
+        console.log(data);
+    };
+
+    //ダウンロード処理
+    const onClickDownloadBtn = () => {
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(data?.convertedBlob as Blob);
+        link.download = "";
+        link.click();
+        console.log("dlc process");
+    };
 
     return (
         <IonCard>
             <IonCardHeader>
-                <IonCardTitle>{file.name}</IonCardTitle>
-                <IonCardSubtitle>{file.size}byte</IonCardSubtitle>
+                <IonCardTitle>{data?.file.name}</IonCardTitle>
+                <IonCardSubtitle>{data?.file.size}byte</IonCardSubtitle>
             </IonCardHeader>
 
             <IonCardContent>
                 <IonGrid>
                     <IonRow>
                         <IonCol className="progress-center">
-                            <IonProgressBar value={proccess}></IonProgressBar>
+                            <IonProgressBar type={progressType} value={data?.proccess}></IonProgressBar>
                         </IonCol>
 
                         <IonCol className="btn-center">
-                            <IonButton disabled={status !== ConvertStatus.DONE} color={'primary'}>download</IonButton>
+                            <ConvertButton onClickConvert={onClickConvertBtn} onClickDownload={onClickDownloadBtn} status={data?.status}></ConvertButton>
                         </IonCol>
                     </IonRow>
                 </IonGrid>
@@ -41,5 +75,3 @@ const FileCard = (props: ConvertData) => {
         </IonCard>
     );
 };
-
-export default FileCard;
