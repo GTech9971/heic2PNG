@@ -12,19 +12,25 @@ import {
 import { useState } from "react";
 import { ConvertData } from "../../model/ConvertData";
 import { ConvertStatus } from "../../model/ConvertStatus";
-import { HeicConvert } from "../../services/heicConvert.service";
+import { ConvertUtil } from "../../services/ConvertUtil.service";
 import { ConvertButton } from "../ConvertButton/ConvertButton";
 import './FileCard.css';
 
 export interface FileCardProps {
+    /** HEIC画像 */
     heic: File;
+    /** 圧縮させるかどうか */
+    compress: boolean;
+    /** 圧縮レベル */
+    compressLevel: number | null;
 }
 
 export const FileCard = (props: FileCardProps) => {
-    const { heic } = props;
+    const { heic, compress, compressLevel } = props;
     const [data, setData] = useState<ConvertData>({ file: heic, status: ConvertStatus.NONE, proccess: 0.0, convertedBlob: null });
-    const { convertHeic2Png } = HeicConvert();
+    const { convertHeic2Png, compressImage } = ConvertUtil();
 
+    const fileSizeMb: number = data.file.size / 1024 / 1024;
     const progressType: "indeterminate" | undefined = data?.status === ConvertStatus.PROCESSING ? "indeterminate" : undefined;
 
     //変換処理
@@ -32,7 +38,13 @@ export const FileCard = (props: FileCardProps) => {
         //一部分だけ更新
         setData((prevState) => ({ ...prevState, status: ConvertStatus.PROCESSING }));
         try {
-            const dest: Blob = await convertHeic2Png(data);
+            let dest: Blob = await convertHeic2Png(data);
+            console.log(dest);
+            //圧縮処理
+            if (compress) {
+                dest = await compressImage(dest, compressLevel as number);
+            }
+
             setData((prevState) => ({ ...prevState, convertedBlob: dest }));
         } catch (e) {
             throw e;
@@ -47,7 +59,8 @@ export const FileCard = (props: FileCardProps) => {
     const onClickDownloadBtn = () => {
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(data?.convertedBlob as Blob);
-        link.download = "";
+        const name = data.file.name.toUpperCase().replace(".HEIC", ".png");
+        link.download = name;
         link.click();
         console.log("dlc process");
     };
@@ -56,7 +69,7 @@ export const FileCard = (props: FileCardProps) => {
         <IonCard>
             <IonCardHeader>
                 <IonCardTitle>{data?.file.name}</IonCardTitle>
-                <IonCardSubtitle>{data?.file.size}byte</IonCardSubtitle>
+                <IonCardSubtitle>{fileSizeMb}MB</IonCardSubtitle>
             </IonCardHeader>
 
             <IonCardContent>

@@ -1,9 +1,11 @@
 import {
   IonBadge,
+  IonCheckbox,
   IonCol,
   IonContent,
   IonGrid,
   IonHeader,
+  IonInput,
   IonLabel,
   IonList,
   IonListHeader,
@@ -17,8 +19,10 @@ import FileInput, { FileInputProps } from '../components/FileInput/FileInput';
 import './Home.css';
 import { FileCard } from '../components/FileCard/FileCard';
 
-const Home: React.FC = () => {
+export const Home: React.FC = () => {
   const [imgs, setImgs] = useState<File[]>([]);
+  const [compress, setCompress] = useState<boolean>(false);
+  const [compressLevel, setCompressLevel] = useState<number>(0);
 
   const props: FileInputProps = {
     text: 'HEICファイルをドラッグ',
@@ -31,7 +35,6 @@ const Home: React.FC = () => {
       setImgs(newList);
     }
   }
-
 
   return (
     <IonPage>
@@ -46,15 +49,23 @@ const Home: React.FC = () => {
           <IonRow className='row-center'>
             <h1>HEIC convert to PNG</h1>
           </IonRow>
-          <IonRow className='row-center'>
-            <FileInput text={props.text} handler={props.handler} />
+
+          {/* 圧縮 */}
+          <IonRow style={{ width: '100%' }}>
+            <IonCol size='3' className='col-center'>
+              <IonLabel style={{ marginRight: '15px' }}>圧縮させる</IonLabel>
+              <IonCheckbox checked={compress} onIonChange={e => setCompress(e.detail.checked)}></IonCheckbox>
+            </IonCol>
+
+            <IonCol className='col-center'>
+              <IonInput disabled={compress === false} type='number' max={10} min={1} value={compressLevel}
+                onIonChange={e => setCompressLevel(parseInt(e.detail.value!, 0))} placeholder="圧縮するサイズ(1~10MB)"></IonInput>
+            </IonCol>
           </IonRow>
 
-          <IonRow>
-            <IonCol>
-              {/* 変換ボタン */}
-              {/* <IonButton color={'danger'} onClick={onClickConvertBtn}>Convert</IonButton> */}
-            </IonCol>
+          {/* ファイル入力 */}
+          <IonRow className='row-center'>
+            <FileInput text={props.text} handler={props.handler} />
           </IonRow>
         </IonGrid>
 
@@ -71,17 +82,13 @@ const Home: React.FC = () => {
 
               {imgs.map((data, index) => {
                 return (
-                  <FileCard key={index} heic={data} />
+                  <FileCard key={index} heic={data} compress={compress} compressLevel={compressLevel} />
                 )
               })}
             </IonList>
           </IonRow>
         </IonGrid>
-
-
       </IonContent>
     </IonPage >
   );
 };
-
-export default Home;
