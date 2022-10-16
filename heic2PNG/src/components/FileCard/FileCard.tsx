@@ -28,7 +28,7 @@ export interface FileCardProps {
 export const FileCard = (props: FileCardProps) => {
     const { heic, compress, compressLevel } = props;
     const [data, setData] = useState<ConvertData>({ file: heic, status: ConvertStatus.NONE, proccess: 0.0, convertedBlob: null });
-    const { convertHeic2Png, compressImage } = ConvertUtil();
+    const { convertHeic2Png, compressBlob } = ConvertUtil();
 
     const fileSizeMb: number = data.file.size / 1024 / 1024;
     const progressType: "indeterminate" | undefined = data?.status === ConvertStatus.PROCESSING ? "indeterminate" : undefined;
@@ -38,20 +38,18 @@ export const FileCard = (props: FileCardProps) => {
         //一部分だけ更新
         setData((prevState) => ({ ...prevState, status: ConvertStatus.PROCESSING }));
         try {
-            let dest: Blob = await convertHeic2Png(data);
-            console.log(dest);
+            let dest: Blob = await convertHeic2Png(data.file);
             //圧縮処理
             if (compress) {
-                dest = await compressImage(dest, compressLevel as number);
+                dest = await compressBlob(dest, compressLevel as number);
             }
-
             setData((prevState) => ({ ...prevState, convertedBlob: dest }));
+            console.log(dest);
         } catch (e) {
             throw e;
         }
 
-        setData((prevState) => ({ ...prevState, status: ConvertStatus.DONE }));
-        setData((prevState) => ({ ...prevState, proccess: 1.0 }));
+        setData((prevState) => ({ ...prevState, status: ConvertStatus.DONE, proccess: 1.0 }));
         console.log(data);
     };
 
