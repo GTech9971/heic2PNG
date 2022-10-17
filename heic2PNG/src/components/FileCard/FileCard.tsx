@@ -10,29 +10,38 @@ import {
     IonRow
 } from "@ionic/react";
 import { useContext, useEffect, useState } from "react";
+import { CompressData } from "../../model/CompressData";
 import { ConvertData } from "../../model/ConvertData";
 import { ConvertStatus } from "../../model/ConvertStatus";
 import { ConvertUtil } from "../../services/ConvertUtil.service";
 import { FileCardDownloadButton } from "../FileCardDownloadButton/FileCardDownloadButton";
+import { compressContext } from "../providers/CompressProvider";
 import { convertStatusContext } from "../providers/ConvertStatusProvider";
-import './FileCard.css';
+import './FileCard.scss';
 
 export interface FileCardProps {
     /** HEIC画像 */
     heic: File;
-    /** 圧縮させるかどうか */
-    compress: boolean;
-    /** 圧縮レベル */
-    compressLevel: number | null;
 }
 
 export const FileCard = (props: FileCardProps) => {
-    const { heic, compress, compressLevel } = props;
+    const { heic } = props;
     const [data, setData] = useState<ConvertData>({ file: heic, status: ConvertStatus.NONE, proccess: 0.0, convertedBlob: null });
     const status: ConvertStatus = useContext<ConvertStatus>(convertStatusContext);
+    const compress: CompressData = useContext<CompressData>(compressContext);
+
     const { convertHeic2Png, compressBlob } = ConvertUtil();
 
-    const fileSizeMb: number = data.file.size / 1024 / 1024;
+    const fileSizeMb: string = (data.file.size / 1024 / 1024).toFixed(2);
+
+
+    function convertFileSizeMb(): string {
+        if (data?.convertedBlob === null) {
+            return "";
+        }
+
+        return " > " + (data?.convertedBlob?.size / 1024 / 1024).toFixed(2) + "MB";
+    };
     const progressType: "indeterminate" | undefined = data?.status === ConvertStatus.PROCESSING ? "indeterminate" : undefined;
 
     //変換処理
@@ -42,8 +51,8 @@ export const FileCard = (props: FileCardProps) => {
         try {
             let dest: Blob = await convertHeic2Png(data.file);
             //圧縮処理
-            if (compress) {
-                dest = await compressBlob(dest, compressLevel as number);
+            if (compress.isCompress) {
+                dest = await compressBlob(dest, compress.CompressLevel as number);
             }
             setData((prevState) => ({ ...prevState, convertedBlob: dest }));
             console.log(dest);
@@ -75,7 +84,10 @@ export const FileCard = (props: FileCardProps) => {
         <IonCard>
             <IonCardHeader>
                 <IonCardTitle>{data?.file.name}</IonCardTitle>
-                <IonCardSubtitle>{fileSizeMb}MB</IonCardSubtitle>
+                <IonCardSubtitle>
+                    {fileSizeMb}MB
+                    {convertFileSizeMb()}
+                </IonCardSubtitle>
             </IonCardHeader>
 
             <IonCardContent>

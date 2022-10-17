@@ -1,11 +1,8 @@
 import {
   IonBadge,
-  IonCheckbox,
-  IonCol,
   IonContent,
   IonGrid,
   IonHeader,
-  IonInput,
   IonLabel,
   IonList,
   IonListHeader,
@@ -19,11 +16,10 @@ import FileInput, { FileInputProps } from '../components/FileInput/FileInput';
 import './Home.css';
 import { FileCard } from '../components/FileCard/FileCard';
 import { ConvertButton } from '../components/ConvertButton/ConvertButton';
+import { CompressInput } from '../components/CompressInput/CompressInput';
 
 export const Home: React.FC = () => {
   const [imgs, setImgs] = useState<File[]>([]);
-  const [compress, setCompress] = useState<boolean>(false);
-  const [compressLevel, setCompressLevel] = useState<number>(0);
 
   const props: FileInputProps = {
     text: 'HEICファイルをドラッグ',
@@ -51,18 +47,8 @@ export const Home: React.FC = () => {
             <h1>HEIC convert to PNG</h1>
           </IonRow>
 
-          {/* 圧縮 */}
-          <IonRow style={{ width: '100%' }}>
-            <IonCol size='3' className='col-center'>
-              <IonLabel style={{ marginRight: '15px' }}>圧縮させる</IonLabel>
-              <IonCheckbox checked={compress} onIonChange={e => setCompress(e.detail.checked)}></IonCheckbox>
-            </IonCol>
-
-            <IonCol className='col-center'>
-              <IonInput disabled={compress === false} type='number' max={10} min={1} value={compressLevel}
-                onIonChange={e => setCompressLevel(parseInt(e.detail.value!, 0))} placeholder="圧縮するサイズ(1~10MB)"></IonInput>
-            </IonCol>
-          </IonRow>
+          {/* 圧縮入力 */}
+          <CompressInput />
 
           {/* ファイル入力 */}
           <IonRow className='row-center'>
@@ -87,7 +73,7 @@ export const Home: React.FC = () => {
 
               {imgs.map((data, index) => {
                 return (
-                  <FileCard key={index} heic={data} compress={compress} compressLevel={compressLevel} />
+                  <FileCard key={index} heic={data} />
                 )
               })}
             </IonList>

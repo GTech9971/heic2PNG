@@ -4,14 +4,17 @@ import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { ConvertStatusProvider } from './components/providers/ConvertStatusProvider';
+import { CompressProvider } from './components/providers/CompressProvider';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
   <ConvertStatusProvider>
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>
+    <CompressProvider>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </CompressProvider>
   </ConvertStatusProvider>
 );
 
