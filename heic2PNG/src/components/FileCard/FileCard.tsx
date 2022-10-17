@@ -15,6 +15,8 @@ import { ConvertData } from "../../model/ConvertData";
 import { ConvertStatus } from "../../model/ConvertStatus";
 import { ConvertUtil } from "../../services/ConvertUtil.service";
 import { FileCardDownloadButton } from "../FileCardDownloadButton/FileCardDownloadButton";
+import { FileImage } from "../FileImage/FileImage";
+import { FileSizeLabel } from "../FileSizeLabel/FileSizeLabel";
 import { compressContext } from "../providers/CompressProvider";
 import { convertStatusContext } from "../providers/ConvertStatusProvider";
 import './FileCard.scss';
@@ -24,25 +26,23 @@ export interface FileCardProps {
     heic: File;
 }
 
+
 export const FileCard = (props: FileCardProps) => {
     const { heic } = props;
     const [data, setData] = useState<ConvertData>({ file: heic, status: ConvertStatus.NONE, proccess: 0.0, convertedBlob: null });
+    // 変換ステータス
     const status: ConvertStatus = useContext<ConvertStatus>(convertStatusContext);
+    // 圧縮
     const compress: CompressData = useContext<CompressData>(compressContext);
-
     const { convertHeic2Png, compressBlob } = ConvertUtil();
-
-    const fileSizeMb: string = (data.file.size / 1024 / 1024).toFixed(2);
-
-
-    function convertFileSizeMb(): string {
-        if (data?.convertedBlob === null) {
-            return "";
-        }
-
-        return " > " + (data?.convertedBlob?.size / 1024 / 1024).toFixed(2) + "MB";
-    };
     const progressType: "indeterminate" | undefined = data?.status === ConvertStatus.PROCESSING ? "indeterminate" : undefined;
+
+    // 変換開始の監視
+    useEffect(() => {
+        if (status === ConvertStatus.PROCESSING) {
+            convert();
+        }
+    }, [status]);
 
     //変換処理
     const convert = async () => {
@@ -64,45 +64,42 @@ export const FileCard = (props: FileCardProps) => {
         console.log(data);
     };
 
-    useEffect(() => {
-        if (status === ConvertStatus.PROCESSING) {
-            convert();
-        }
-    }, [status]);
 
     //ダウンロード処理
     const onClickDownloadBtn = () => {
         const link = document.createElement('a');
         link.href = window.URL.createObjectURL(data?.convertedBlob as Blob);
-        const name = data.file.name.toUpperCase().replace(".HEIC", ".png");
-        link.download = name;
+        link.download = data.file.name.toUpperCase().replace(".HEIC", ".png");
         link.click();
+        URL.revokeObjectURL(link.href);
         console.log("dlc process");
     };
 
     return (
-        <IonCard>
-            <IonCardHeader>
-                <IonCardTitle>{data?.file.name}</IonCardTitle>
-                <IonCardSubtitle>
-                    {fileSizeMb}MB
-                    {convertFileSizeMb()}
-                </IonCardSubtitle>
-            </IonCardHeader>
+        <>
+            <FileImage imgBlob={data?.convertedBlob} />
+            <IonCard>
+                <IonCardHeader>
+                    <IonCardTitle>{data?.file.name}</IonCardTitle>
+                    <IonCardSubtitle>
+                        <FileSizeLabel data={data} />
+                    </IonCardSubtitle>
+                </IonCardHeader>
 
-            <IonCardContent>
-                <IonGrid>
-                    <IonRow>
-                        <IonCol className="progress-center">
-                            <IonProgressBar type={progressType} value={data?.proccess}></IonProgressBar>
-                        </IonCol>
+                <IonCardContent>
+                    <IonGrid>
+                        <IonRow>
+                            <IonCol className="progress-center">
+                                <IonProgressBar type={progressType} value={data?.proccess}></IonProgressBar>
+                            </IonCol>
 
-                        <IonCol className="btn-center">
-                            <FileCardDownloadButton onClickDownload={onClickDownloadBtn} status={data?.status} />
-                        </IonCol>
-                    </IonRow>
-                </IonGrid>
-            </IonCardContent>
-        </IonCard>
+                            <IonCol className="btn-center">
+                                <FileCardDownloadButton onClickDownload={onClickDownloadBtn} status={data?.status} />
+                            </IonCol>
+                        </IonRow>
+                    </IonGrid>
+                </IonCardContent>
+            </IonCard>
+        </>
     );
 };
