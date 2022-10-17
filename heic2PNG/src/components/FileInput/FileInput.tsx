@@ -1,4 +1,4 @@
-import React from "react";
+import "./FileInput.scss";
 import { FileUploader } from "react-drag-drop-files";
 
 export interface FileInputProps {
@@ -6,7 +6,7 @@ export interface FileInputProps {
     handler: (file: FileList) => void;
 }
 
-const FILE_TYPES = ["HEIC"];
+const FILE_TYPES: string[] = ["HEIC"];
 
 const FileInput = (props: FileInputProps) => {
     const { text, handler } = props;

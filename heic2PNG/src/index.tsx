@@ -3,13 +3,16 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import { ConvertStatusProvider } from './components/providers/ConvertStatusProvider';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <ConvertStatusProvider>
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  </ConvertStatusProvider>
 );
 
 // If you want your app to work offline and load faster, you can change
