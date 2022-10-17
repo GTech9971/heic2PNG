@@ -18,6 +18,7 @@ import React, { useState } from 'react';
 import FileInput, { FileInputProps } from '../components/FileInput/FileInput';
 import './Home.css';
 import { FileCard } from '../components/FileCard/FileCard';
+import { ConvertButton } from '../components/ConvertButton/ConvertButton';
 
 export const Home: React.FC = () => {
   const [imgs, setImgs] = useState<File[]>([]);
@@ -66,6 +67,10 @@ export const Home: React.FC = () => {
           {/* ファイル入力 */}
           <IonRow className='row-center'>
             <FileInput text={props.text} handler={props.handler} />
+          </IonRow>
+
+          <IonRow className='row-center'>
+            <ConvertButton />
           </IonRow>
         </IonGrid>
 

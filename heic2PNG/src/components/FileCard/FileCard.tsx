@@ -9,11 +9,12 @@ import {
     IonProgressBar,
     IonRow
 } from "@ionic/react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ConvertData } from "../../model/ConvertData";
 import { ConvertStatus } from "../../model/ConvertStatus";
 import { ConvertUtil } from "../../services/ConvertUtil.service";
-import { ConvertButton } from "../ConvertButton/ConvertButton";
+import { FileCardDownloadButton } from "../FileCardDownloadButton/FileCardDownloadButton";
+import { convertStatusContext } from "../providers/ConvertStatusProvider";
 import './FileCard.css';
 
 export interface FileCardProps {
@@ -28,13 +29,14 @@ export interface FileCardProps {
 export const FileCard = (props: FileCardProps) => {
     const { heic, compress, compressLevel } = props;
     const [data, setData] = useState<ConvertData>({ file: heic, status: ConvertStatus.NONE, proccess: 0.0, convertedBlob: null });
+    const status: ConvertStatus = useContext<ConvertStatus>(convertStatusContext);
     const { convertHeic2Png, compressBlob } = ConvertUtil();
 
     const fileSizeMb: number = data.file.size / 1024 / 1024;
     const progressType: "indeterminate" | undefined = data?.status === ConvertStatus.PROCESSING ? "indeterminate" : undefined;
 
     //変換処理
-    const onClickConvertBtn = async () => {
+    const convert = async () => {
         //一部分だけ更新
         setData((prevState) => ({ ...prevState, status: ConvertStatus.PROCESSING }));
         try {
@@ -52,6 +54,12 @@ export const FileCard = (props: FileCardProps) => {
         setData((prevState) => ({ ...prevState, status: ConvertStatus.DONE, proccess: 1.0 }));
         console.log(data);
     };
+
+    useEffect(() => {
+        if (status === ConvertStatus.PROCESSING) {
+            convert();
+        }
+    }, [status]);
 
     //ダウンロード処理
     const onClickDownloadBtn = () => {
@@ -78,7 +86,7 @@ export const FileCard = (props: FileCardProps) => {
                         </IonCol>
 
                         <IonCol className="btn-center">
-                            <ConvertButton onClickConvert={onClickConvertBtn} onClickDownload={onClickDownloadBtn} status={data?.status}></ConvertButton>
+                            <FileCardDownloadButton onClickDownload={onClickDownloadBtn} status={data?.status} />
                         </IonCol>
                     </IonRow>
                 </IonGrid>
