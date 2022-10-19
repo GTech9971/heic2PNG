@@ -1,4 +1,6 @@
-import { IonImg } from "@ionic/react";
+import "./FileImage.scss";
+import { IonIcon, IonImg } from "@ionic/react";
+import { imageOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 
 export interface FileImageProp {
@@ -28,6 +30,14 @@ export const FileImage = (props: FileImageProp) => {
     }, [imgBlob]);
 
     return (
-        <IonImg src={base64}></IonImg>
+        <>
+            <>
+                {!base64 && <IonIcon className="img-box" icon={imageOutline}></IonIcon>}
+            </>
+
+            <>
+                {base64 && <IonImg className="img-box" src={base64}></IonImg>}
+            </>
+        </>
     )
 }

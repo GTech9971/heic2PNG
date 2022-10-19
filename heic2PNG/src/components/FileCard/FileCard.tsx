@@ -76,30 +76,31 @@ export const FileCard = (props: FileCardProps) => {
     };
 
     return (
-        <>
-            <FileImage imgBlob={data?.convertedBlob} />
-            <IonCard>
-                <IonCardHeader>
-                    <IonCardTitle>{data?.file.name}</IonCardTitle>
-                    <IonCardSubtitle>
-                        <FileSizeLabel data={data} />
-                    </IonCardSubtitle>
-                </IonCardHeader>
+        <IonCard>
+            <IonCardHeader>
+                <IonCardTitle>{data?.file.name}</IonCardTitle>
+                <IonCardSubtitle>
+                    <FileSizeLabel data={data} />
+                </IonCardSubtitle>
+            </IonCardHeader>
 
-                <IonCardContent>
-                    <IonGrid>
-                        <IonRow>
-                            <IonCol className="progress-center">
-                                <IonProgressBar type={progressType} value={data?.proccess}></IonProgressBar>
-                            </IonCol>
+            <IonCardContent>
+                <IonGrid>
+                    <IonRow>
+                        <IonCol size="3">
+                            <FileImage imgBlob={data?.convertedBlob} />
+                        </IonCol>
 
-                            <IonCol className="btn-center">
-                                <FileCardDownloadButton onClickDownload={onClickDownloadBtn} status={data?.status} />
-                            </IonCol>
-                        </IonRow>
-                    </IonGrid>
-                </IonCardContent>
-            </IonCard>
-        </>
+                        <IonCol size="6" className="progress-center">
+                            <IonProgressBar type={progressType} value={data?.proccess}></IonProgressBar>
+                        </IonCol>
+
+                        <IonCol size="3" className="btn-center">
+                            <FileCardDownloadButton onClickDownload={onClickDownloadBtn} status={data?.status} />
+                        </IonCol>
+                    </IonRow>
+                </IonGrid>
+            </IonCardContent>
+        </IonCard>
     );
 };
