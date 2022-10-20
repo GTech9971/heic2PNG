@@ -5,6 +5,7 @@ import { ConvertStatus } from "../../model/ConvertStatus";
 import { convertStatusContext, setConvertStatusContext } from "../providers/ConvertStatusProvider";
 
 export const ConvertButton = () => {
+    const [text, setText] = useState<string>("CONVERT");
     const [disable, setDisable] = useState<boolean>(false);
     const status: ConvertStatus = useContext<ConvertStatus>(convertStatusContext);
     const setStatus = useContext(setConvertStatusContext);
@@ -12,8 +13,14 @@ export const ConvertButton = () => {
     useEffect(() => {
         // 処理中はボタン操作不可
         if (status === ConvertStatus.PROCESSING) {
+            setText("CONVERTING");
             setDisable(true);
         }
+
+        //変換完了後はテキストを変更する
+        if (status === ConvertStatus.DONE) {
+        }
+
     }, [status]);
 
     /** ボタンクリックイベント */
@@ -24,8 +31,10 @@ export const ConvertButton = () => {
     };
 
     return (
-        <IonButton size="large" color={'danger'} onClick={onClickConvertBtn} disabled={disable}>
-            Convert
-        </IonButton>
+        <section className="convert-btn-box">
+            <IonButton className="convert-btn" expand="block" color={'danger'} onClick={onClickConvertBtn} disabled={disable}>
+                {text}
+            </IonButton>
+        </section>
     )
 };

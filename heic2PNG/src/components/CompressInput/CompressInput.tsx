@@ -9,7 +9,7 @@ export const CompressInput = () => {
     const setCompress = useContext(setCompressContext);
 
     return (
-        <IonRow style={{ width: '100%' }}>
+        <IonRow className="box">
             <IonCol size='3' className='col-center'>
                 <IonLabel style={{ marginRight: '15px' }}>圧縮させる</IonLabel>
                 <IonCheckbox checked={compress.isCompress} onIonChange={e => setCompress((prevState) => ({ ...prevState, isCompress: e.detail.checked }))} />

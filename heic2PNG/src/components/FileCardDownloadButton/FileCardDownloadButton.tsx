@@ -1,6 +1,7 @@
 import "./FileCardDownloadButton.scss";
-import { IonButton } from "@ionic/react";
+import { IonButton, IonIcon } from "@ionic/react";
 import { useEffect, useState } from "react";
+import { arrowDownCircleOutline } from "ionicons/icons";
 import { ConvertStatus } from "../../model/ConvertStatus";
 
 export interface FileCardDownloadButtonProps {
@@ -12,6 +13,8 @@ export interface FileCardDownloadButtonProps {
 
 export const FileCardDownloadButton = (props: FileCardDownloadButtonProps) => {
     const [disable, setDisable] = useState<boolean>(true);
+    // ダウンロードしたかどうか
+    const [isDownload, setIsDownload] = useState<boolean>(false);
     const { onClickDownload, status } = props;
 
     useEffect(() => {
@@ -21,9 +24,15 @@ export const FileCardDownloadButton = (props: FileCardDownloadButtonProps) => {
         }
     }, [status]);
 
+    const onClick = () => {
+        onClickDownload();
+        setIsDownload(true);
+    };
+
     return (
-        <IonButton color={'success'} onClick={onClickDownload} disabled={disable}>
+        <IonButton color={'success'} onClick={onClick} disabled={disable} >
             Download
+            <>{isDownload && <IonIcon icon={arrowDownCircleOutline} />}</>
         </IonButton>
     )
 };
