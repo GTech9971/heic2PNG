@@ -5,17 +5,20 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import { ConvertStatusProvider } from './components/providers/ConvertStatusProvider';
 import { CompressProvider } from './components/providers/CompressProvider';
+import { ConvertJobProvider } from './components/providers/ConvertJobStatusProvider';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
-  <ConvertStatusProvider>
-    <CompressProvider>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </CompressProvider>
-  </ConvertStatusProvider>
+  <ConvertJobProvider>
+    <ConvertStatusProvider>
+      <CompressProvider>
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </CompressProvider>
+    </ConvertStatusProvider>
+  </ConvertJobProvider>
 );
 
 // If you want your app to work offline and load faster, you can change

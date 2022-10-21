@@ -18,6 +18,7 @@ import { FileCardDownloadButton } from "../FileCardDownloadButton/FileCardDownlo
 import { FileImage } from "../FileImage/FileImage";
 import { FileSizeLabel } from "../FileSizeLabel/FileSizeLabel";
 import { compressContext } from "../providers/CompressProvider";
+import { setConvertJobContext } from "../providers/ConvertJobStatusProvider";
 import { convertStatusContext } from "../providers/ConvertStatusProvider";
 import './FileCard.scss';
 
@@ -26,10 +27,17 @@ export interface FileCardProps {
     heic: File;
 }
 
-
+/**
+ * 変換データカード
+ * @param props 
+ * @returns 
+ */
 export const FileCard = (props: FileCardProps) => {
     const { heic } = props;
+    // 変換データ
     const [data, setData] = useState<ConvertData>({ file: heic, status: ConvertStatus.NONE, proccess: 0.0, convertedBlob: null });
+    //ジョブ
+    const setConvertJob = useContext(setConvertJobContext);
     // 変換ステータス
     const status: ConvertStatus = useContext<ConvertStatus>(convertStatusContext);
     // 圧縮
@@ -60,7 +68,10 @@ export const FileCard = (props: FileCardProps) => {
             throw e;
         }
 
+        //変換データ更新
         setData((prevState) => ({ ...prevState, status: ConvertStatus.DONE, proccess: 1.0 }));
+        //ジョブ完了数更新
+        setConvertJob((prevState) => ({ ...prevState, FinishedJobCount: prevState.FinishedJobCount + 1 }));
         console.log(data);
     };
 

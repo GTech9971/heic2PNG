@@ -1,5 +1,6 @@
 import {
   IonBadge,
+  IonCol,
   IonContent,
   IonGrid,
   IonHeader,
@@ -11,14 +12,17 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import FileInput, { FileInputProps } from '../components/FileInput/FileInput';
 import './Home.css';
 import { FileCard } from '../components/FileCard/FileCard';
 import { ConvertButton } from '../components/ConvertButton/ConvertButton';
 import { CompressInput } from '../components/CompressInput/CompressInput';
+import { setConvertJobContext } from '../components/providers/ConvertJobStatusProvider';
+import { JobCountLabel } from '../components/JobCountLabel/JobCountLabel';
 
 export const Home: React.FC = () => {
+  const setConvertJob = useContext(setConvertJobContext);
   const [imgs, setImgs] = useState<File[]>([]);
 
   const props: FileInputProps = {
@@ -30,6 +34,9 @@ export const Home: React.FC = () => {
         newList.push(files.item(i) as File);
       }
       setImgs(newList);
+
+      // ジョブ数設定
+      setConvertJob({ FinishedJobCount: 0, TotalJobCount: newList.length });
     }
   }
 
@@ -65,10 +72,20 @@ export const Home: React.FC = () => {
             <IonList style={{ width: '100%' }}>
 
               <IonListHeader lines='inset'>
-                <IonLabel style={{ display: 'flex', alignItems: 'center' }}>
-                  Convert HEIC image list
-                  <IonBadge style={{ marginLeft: '5px' }} color={'danger'}>{imgs.length}</IonBadge>
-                </IonLabel>
+                <IonGrid>
+                  <IonRow>
+                    <IonCol size='11'>
+                      <IonLabel>
+                        Convert HEIC image list
+                      </IonLabel>
+                    </IonCol>
+
+                    <IonCol size='1'>
+                      <JobCountLabel />
+                    </IonCol>
+                  </IonRow>
+                </IonGrid>
+
               </IonListHeader>
 
               {imgs.map((data, index) => {

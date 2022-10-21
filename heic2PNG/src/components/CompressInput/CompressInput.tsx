@@ -11,13 +11,13 @@ export const CompressInput = () => {
     return (
         <IonRow className="box">
             <IonCol size='3' className='col-center'>
-                <IonLabel style={{ marginRight: '15px' }}>圧縮させる</IonLabel>
+                <IonLabel style={{ marginRight: '15px' }}>Compress</IonLabel>
                 <IonCheckbox checked={compress.isCompress} onIonChange={e => setCompress((prevState) => ({ ...prevState, isCompress: e.detail.checked }))} />
             </IonCol>
 
             <IonCol className='col-center'>
                 <IonInput disabled={compress.isCompress === false} type='number' max={10} min={1} value={compress.CompressLevel}
-                    onIonChange={e => setCompress((prevState) => ({ ...prevState, CompressLevel: parseInt(e.detail.value!, 0) }))} placeholder="圧縮するサイズ(1~10MB)" />
+                    onIonChange={e => setCompress((prevState) => ({ ...prevState, CompressLevel: parseInt(e.detail.value!, 0) }))} placeholder="Compress size(1~10MB)" />
             </IonCol>
         </IonRow >
     )
