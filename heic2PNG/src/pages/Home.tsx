@@ -1,5 +1,4 @@
 import {
-  IonBadge,
   IonCol,
   IonContent,
   IonGrid,
@@ -12,8 +11,8 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import React, { useContext, useState } from 'react';
-import FileInput, { FileInputProps } from '../components/FileInput/FileInput';
+import React, { useCallback, useContext, useState } from 'react';
+import FileInput from '../components/FileInput/FileInput';
 import './Home.css';
 import { FileCard } from '../components/FileCard/FileCard';
 import { ConvertButton } from '../components/ConvertButton/ConvertButton';
@@ -25,20 +24,17 @@ export const Home: React.FC = () => {
   const setConvertJob = useContext(setConvertJobContext);
   const [imgs, setImgs] = useState<File[]>([]);
 
-  const props: FileInputProps = {
-    text: 'HEICファイルをドラッグ',
-    /** ファイル入力時のイベントハンドラ */
-    handler: (files: FileList) => {
-      const newList: File[] = [];
-      for (let i = 0; i < files.length; i++) {
-        newList.push(files.item(i) as File);
-      }
-      setImgs(newList);
-
-      // ジョブ数設定
-      setConvertJob({ FinishedJobCount: 0, TotalJobCount: newList.length });
+  /** 画像ファイル入力時のイベント */
+  const fileInputHandler = useCallback((files: FileList) => {
+    const newList: File[] = [];
+    for (let i = 0; i < files.length; i++) {
+      newList.push(files.item(i) as File);
     }
-  }
+    setImgs(newList);
+
+    // ジョブ数設定
+    setConvertJob({ FinishedJobCount: 0, TotalJobCount: newList.length });
+  }, [imgs]);
 
   return (
     <IonPage>
@@ -59,7 +55,7 @@ export const Home: React.FC = () => {
 
           {/* ファイル入力 */}
           <IonRow className='row-center'>
-            <FileInput text={props.text} handler={props.handler} />
+            <FileInput text={"HEICファイルをドラッグ"} handler={fileInputHandler} />
           </IonRow>
 
           <IonRow className='row-center'>
@@ -90,7 +86,7 @@ export const Home: React.FC = () => {
 
               {imgs.map((data, index) => {
                 return (
-                  <FileCard key={index} heic={data} />
+                  <FileCard key={index} heic={data} id={index} />
                 )
               })}
             </IonList>

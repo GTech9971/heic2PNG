@@ -8,8 +8,4 @@ export enum ConvertStatus {
     PROCESSING,
     /** 処理終了 */
     DONE,
-    /** ダウンロード */
-    DOWNLOAD,
-    /** エラー */
-    ERROR,
 }
