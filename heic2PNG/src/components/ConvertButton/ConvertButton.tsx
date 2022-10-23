@@ -2,18 +2,16 @@ import "./ConvertButton.css";
 import { IonButton } from "@ionic/react";
 import { useContext, useEffect, useState } from "react";
 import { ConvertStatus } from "../../model/ConvertStatus";
-import { convertStatusContext, setConvertStatusContext } from "../providers/ConvertStatusProvider";
 import { ConvertJobData } from "../../model/ConvertJobData";
-import { convertJobContext } from "../providers/ConvertJobStatusProvider";
+import { convertJobContext, setConvertJobContext } from "../providers/ConvertJobStatusProvider";
 
 export const ConvertButton = () => {
     // ジョブ管理
     const convertJob: ConvertJobData = useContext<ConvertJobData>(convertJobContext);
+    const setConvertJob = useContext(setConvertJobContext);
 
     const [text, setText] = useState<"CONVERT" | "PROCESSING" | "DONE">("CONVERT");
     const [disable, setDisable] = useState<boolean>(false);
-    const status: ConvertStatus = useContext<ConvertStatus>(convertStatusContext);
-    const setStatus = useContext(setConvertStatusContext);
 
     const color = (): string => {
         if (text === "CONVERT" || text === "PROCESSING") {
@@ -24,22 +22,23 @@ export const ConvertButton = () => {
 
     useEffect(() => {
         // 処理中はボタン操作不可
-        if (status === ConvertStatus.PROCESSING) {
+        if (convertJob.WholeStatus === ConvertStatus.PROCESSING) {
             setText("PROCESSING");
             setDisable(true);
         }
 
         //全ジョブ完了後はテキストを変更する
-        if (convertJob.FinishedJobCount === convertJob.TotalJobCount) {
+        if (convertJob.WholeStatus === ConvertStatus.DONE) {
             setText("DONE");
         }
 
-    }, [status, convertJob]);
+    }, [convertJob]);
 
     /** ボタンクリックイベント */
     const onClickConvertBtn = async () => {
-        if (status === ConvertStatus.NONE) {
-            setStatus(ConvertStatus.PROCESSING);
+        if (convertJob.WholeStatus === ConvertStatus.NONE) {
+            //全体へ変換開始
+            setConvertJob((prevState => ({ ...prevState, WholeStatus: ConvertStatus.PROCESSING })));
         }
     };
 

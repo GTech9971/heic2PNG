@@ -1,5 +1,6 @@
 import React, { createContext, Dispatch, SetStateAction, useState } from "react";
 import { ConvertJobData } from "../../model/ConvertJobData";
+import { ConvertStatus } from "../../model/ConvertStatus";
 
 /**
  * 変換ジョブ
@@ -7,6 +8,7 @@ import { ConvertJobData } from "../../model/ConvertJobData";
 export const convertJobContext = createContext<ConvertJobData>({
     FinishedJobCount: 0,
     TotalJobCount: -1,
+    WholeStatus: ConvertStatus.NONE,
 });
 
 export const setConvertJobContext = createContext<Dispatch<SetStateAction<ConvertJobData>>>(
@@ -22,6 +24,7 @@ export const ConvertJobProvider = (props: ConvertJobContextProp) => {
     const [convertJob, setConvertJob] = useState<ConvertJobData>({
         FinishedJobCount: 0,
         TotalJobCount: -1,
+        WholeStatus: ConvertStatus.NONE,
     });
 
     return (

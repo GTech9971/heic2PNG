@@ -2,16 +2,16 @@ import "./FileInput.scss";
 import { FileUploader } from "react-drag-drop-files";
 
 export interface FileInputProps {
-    text: string;
+    /** ファイル */
     handler: (file: FileList) => void;
 }
 
 const FILE_TYPES: string[] = ["HEIC"];
 
 const FileInput = (props: FileInputProps) => {
-    const { text, handler } = props;
+    const { handler } = props;
     return (
-        <FileUploader label={text} handleChange={handler} name="file" multiple={true} types={FILE_TYPES}></FileUploader>
+        <FileUploader handleChange={handler} name="file" multiple={true} types={FILE_TYPES}></FileUploader>
     );
 };
 

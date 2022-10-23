@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import { ConvertStatusProvider } from './components/providers/ConvertStatusProvider';
 import { CompressProvider } from './components/providers/CompressProvider';
 import { ConvertJobProvider } from './components/providers/ConvertJobStatusProvider';
 
@@ -11,13 +10,11 @@ const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
   <ConvertJobProvider>
-    <ConvertStatusProvider>
-      <CompressProvider>
-        <React.StrictMode>
-          <App />
-        </React.StrictMode>
-      </CompressProvider>
-    </ConvertStatusProvider>
+    <CompressProvider>
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    </CompressProvider>
   </ConvertJobProvider>
 );
 

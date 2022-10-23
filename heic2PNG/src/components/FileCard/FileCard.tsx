@@ -20,7 +20,6 @@ import { FileImage } from "../FileImage/FileImage";
 import { FileSizeLabel } from "../FileSizeLabel/FileSizeLabel";
 import { compressContext } from "../providers/CompressProvider";
 import { convertJobContext, setConvertJobContext } from "../providers/ConvertJobStatusProvider";
-import { convertStatusContext, setConvertStatusContext } from "../providers/ConvertStatusProvider";
 import './FileCard.scss';
 
 export interface FileCardProps {
@@ -50,9 +49,6 @@ export const FileCard = memo<FileCardProps>(props => {
     //ジョブ
     const convertJob: ConvertJobData = useContext(convertJobContext);
     const setConvertJob = useContext(setConvertJobContext);
-    // 変換ステータス
-    const status: ConvertStatus = useContext<ConvertStatus>(convertStatusContext);
-    const setStatus = useContext(setConvertStatusContext);
     // 圧縮
     const compress: CompressData = useContext<CompressData>(compressContext);
     const { convertHeic2Png, compressBlob } = ConvertUtil();
@@ -65,10 +61,10 @@ export const FileCard = memo<FileCardProps>(props => {
         const allowedConvert: boolean = (data.id - convertJob.FinishedJobCount) < 10;
 
         //変換開始ボタンが押下されているかつ、変換処理は10件ずつ行う
-        if (data.status === ConvertStatus.NONE && status === ConvertStatus.PROCESSING && allowedConvert) {
+        if (data.status === ConvertStatus.NONE && convertJob.WholeStatus === ConvertStatus.PROCESSING && allowedConvert) {
             convert();
         }
-    }, [status, convertJob.FinishedJobCount]);
+    }, [convertJob]);
 
     //変換処理
     const convert = async () => {
@@ -92,7 +88,7 @@ export const FileCard = memo<FileCardProps>(props => {
             const finishedCount: number = prevState.FinishedJobCount + 1;
             //全件終了した場合、ステータスを完了に切り替える
             if (finishedCount === prevState.TotalJobCount) {
-                setStatus(ConvertStatus.DONE);
+                setConvertJob((prevState => ({ ...prevState, WholeStatus: ConvertStatus.DONE })));
             }
             return { ...prevState, FinishedJobCount: finishedCount }
         });

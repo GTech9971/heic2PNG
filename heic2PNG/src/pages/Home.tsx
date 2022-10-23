@@ -19,6 +19,7 @@ import { ConvertButton } from '../components/ConvertButton/ConvertButton';
 import { CompressInput } from '../components/CompressInput/CompressInput';
 import { setConvertJobContext } from '../components/providers/ConvertJobStatusProvider';
 import { JobCountLabel } from '../components/JobCountLabel/JobCountLabel';
+import { ConvertStatus } from '../model/ConvertStatus';
 
 export const Home: React.FC = () => {
   const setConvertJob = useContext(setConvertJobContext);
@@ -33,7 +34,7 @@ export const Home: React.FC = () => {
     setImgs(newList);
 
     // ジョブ数設定
-    setConvertJob({ FinishedJobCount: 0, TotalJobCount: newList.length });
+    setConvertJob({ FinishedJobCount: 0, TotalJobCount: newList.length, WholeStatus: ConvertStatus.NONE });
   }, [imgs]);
 
   return (
@@ -55,7 +56,7 @@ export const Home: React.FC = () => {
 
           {/* ファイル入力 */}
           <IonRow className='row-center'>
-            <FileInput text={"HEICファイルをドラッグ"} handler={fileInputHandler} />
+            <FileInput handler={fileInputHandler} />
           </IonRow>
 
           <IonRow className='row-center'>
