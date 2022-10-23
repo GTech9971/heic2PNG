@@ -11,7 +11,7 @@ export const ConvertButton = () => {
     const setConvertJob = useContext(setConvertJobContext);
 
     const [text, setText] = useState<"CONVERT" | "PROCESSING" | "DONE">("CONVERT");
-    const [disable, setDisable] = useState<boolean>(false);
+    const [disable, setDisable] = useState<boolean>(true);
 
     const color = (): string => {
         if (text === "CONVERT" || text === "PROCESSING") {
@@ -21,6 +21,13 @@ export const ConvertButton = () => {
     }
 
     useEffect(() => {
+        //ファイル数が0件の場合、ボタン押下不可        
+        if (convertJob.TotalJobCount === 0) {
+            setDisable(true);
+        } else {
+            setDisable(false);
+        }
+
         // 処理中はボタン操作不可
         if (convertJob.WholeStatus === ConvertStatus.PROCESSING) {
             setText("PROCESSING");

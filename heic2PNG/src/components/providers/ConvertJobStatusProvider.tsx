@@ -7,7 +7,7 @@ import { ConvertStatus } from "../../model/ConvertStatus";
  */
 export const convertJobContext = createContext<ConvertJobData>({
     FinishedJobCount: 0,
-    TotalJobCount: -1,
+    TotalJobCount: 0,
     WholeStatus: ConvertStatus.NONE,
 });
 
@@ -23,7 +23,7 @@ export const ConvertJobProvider = (props: ConvertJobContextProp) => {
     const { children } = props;
     const [convertJob, setConvertJob] = useState<ConvertJobData>({
         FinishedJobCount: 0,
-        TotalJobCount: -1,
+        TotalJobCount: 0,
         WholeStatus: ConvertStatus.NONE,
     });
 
